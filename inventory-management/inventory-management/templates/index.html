@@ -1,0 +1,53 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<h2>Inventory Items</h2>
+
+<!-- Add/Edit Form -->
+<form action="{{ url_for('edit', id=item.id) if mode == 'edit' else url_for('add') }}" method="POST" class="form">
+    <input type="text" name="item_name" placeholder="Item Name" value="{{ item.item_name if mode == 'edit' else '' }}" required>
+    <input type="text" name="item_number" placeholder="Item Number" value="{{ item.item_number if mode == 'edit' else '' }}" required>
+    <input type="number" name="quantity" placeholder="Quantity" value="{{ item.quantity if mode == 'edit' else '' }}" required>
+    <input type="number" step="0.01" name="price" placeholder="Price" value="{{ item.price if mode == 'edit' else '' }}" required>
+    <button type="submit">{{ 'Update Item' if mode == 'edit' else 'Add Item' }}</button>
+</form>
+
+<!-- Table -->
+<table>
+    <thead>
+        <tr>
+            <th>Item Name</th>
+            <th>Item Number</th>
+            <th>Quantity</th>
+            <th>Price</th>
+            <th>Date Added</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in items %}
+        <tr>
+            <td>{{ item.item_name }}</td>
+            <td>{{ item.item_number }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>{{ item.price }}</td>
+            <td>{{ item.date_added.strftime('%Y-%m-%d') }}</td>
+            <td>
+                <a href="{{ url_for('edit', id=item.id) }}">Edit</a>
+                <a href="{{ url_for('delete', id=item.id) }}" onclick="return confirm('Are you sure?')">Delete</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- CSV Controls -->
+<div style="margin-top: 20px;">
+    <form action="{{ url_for('import_csv') }}" method="POST" enctype="multipart/form-data" style="margin-bottom: 10px;">
+        <input type="file" name="file" accept=".csv" required>
+        <button type="submit">Import CSV</button>
+    </form>
+    <a href="{{ url_for('export_csv') }}"><button>Export to CSV</button></a>
+</div>
+
+{% endblock %}
